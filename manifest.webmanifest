@@ -1,0 +1,10 @@
+{
+  "name": "Doctor Work Plan",
+  "short_name": "Work Plan",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f8",
+  "theme_color": "#111827",
+  "description": "Day-by-day doctor visit work plan and checklist.",
+  "icons": []
+}

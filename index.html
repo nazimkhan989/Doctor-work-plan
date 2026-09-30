@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>My Doctor Work Plan</title>
+<style>
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#f4f6f8;color:#111827}
+header{background:#111827;color:white;padding:18px 16px 16px;position:sticky;top:0;z-index:10}
+h1{font-size:22px;margin:0 0 4px} .sub{opacity:.78;font-size:13px}
+.wrap{max-width:760px;margin:auto;padding:14px}
+.hero{background:white;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px #0000000d}
+.hero h2{margin:0 0 4px;font-size:20px} .todaydate{color:#6b7280;font-size:13px}
+.statrow{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.pill{background:#eef2ff;padding:7px 10px;border-radius:999px;font-size:12px}
+.tabs{display:flex;gap:8px;margin:12px 0}
+button{border:0;border-radius:12px;padding:10px 13px;font-weight:650;background:#e5e7eb;color:#111827}
+button.active{background:#111827;color:white}
+.search{width:100%;padding:12px 14px;border:1px solid #d1d5db;border-radius:12px;font-size:15px;margin-bottom:12px}
+.day{background:white;border-radius:16px;margin:10px 0;padding:14px;box-shadow:0 2px 8px #0000000a}
+.day.today{outline:2px solid #111827}
+.dayhead{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.daytitle{font-weight:750} .date{font-size:12px;color:#6b7280;margin-top:2px}
+.badge{font-size:11px;padding:5px 8px;border-radius:999px;background:#eef2ff}
+.badge.holiday{background:#fee2e2;color:#991b1b}
+.doctor{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid #f0f1f3}
+.doctor:first-child{margin-top:8px}
+.check{width:19px;height:19px;flex:0 0 auto;margin-top:1px}
+.name{font-weight:650;font-size:14px} .hosp{font-size:12px;color:#6b7280;margin-top:2px}
+.group{margin-top:10px} .grouphead{font-size:12px;font-weight:750;color:#374151;margin-bottom:3px}
+.empty{padding:14px;text-align:center;color:#6b7280}
+.note{font-size:12px;color:#6b7280;margin:14px 2px}
+</style>
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#111827"></head>
+<body>
+<header><h1>Doctor Work Plan</h1><div class="sub">Day-by-day visit checklist • October 2026</div></header>
+<div class="wrap">
+  <section id="todayHero" class="hero"></section>
+  <div class="tabs">
+    <button id="todayBtn" class="active" onclick="showMode('today')">Today</button>
+    <button id="allBtn" onclick="showMode('all')">All Days</button>
+  </div>
+  <input id="search" class="search" placeholder="Search doctor or hospital..." oninput="render()">
+  <div id="content"></div>
+  <div class="note">Tick a doctor after the visit. Your checkmarks are saved on this phone/browser.</div>
+</div>
+<script>
+const DAYS = [{"day": 1, "weekday": "THURSDAY", "holiday": false, "doctors": [{"name": "ADITI MAHESHWARI", "hospital": "Kailash hospital"}, {"name": "BRIJESH MOURYA", "hospital": "kailash hospital"}, {"name": "DILJIT SINGH", "hospital": "KANISHK Hospital"}, {"name": "DIVYA GOSWAMI", "hospital": "Kailash Hospital"}, {"name": "GOPALJEE SHARMA", "hospital": "Kailash Hospital"}, {"name": "RITISHA BHATT", "hospital": "KAILASH HOSPITAL"}, {"name": "SANDHYA DEORA", "hospital": "KAILASH HOSPITAL"}, {"name": "SHALEEN BHATNAGAR", "hospital": "KAILASH HOSPITAL"}], "date": "2026-10-01", "date_label": "01 Oct 2026"}, {"day": 2, "weekday": "FRIDAY", "holiday": true, "doctors": [], "date": "2026-10-02", "date_label": "02 Oct 2026"}, {"day": 3, "weekday": "SATURDAY", "holiday": false, "doctors": [{"name": "AMBRISH DIXIT", "hospital": "velmed Hospital"}, {"name": "ANKIT PANDEY", "hospital": "velmed Hospital"}, {"name": "ANUJ BAGGA", "hospital": "velmed Hospital"}, {"name": "JUHI MEHTA BHANDARI", "hospital": "VELMED HOSPITAL"}, {"name": "MANSHI VAISH", "hospital": "VAISH NURSING HOME"}, {"name": "MEENU VAISH", "hospital": "VAISH NURSING HOME"}, {"name": "PURNIMA SINGH", "hospital": "VELMED HOSPITAL"}, {"name": "SUNIL SINGH", "hospital": "VELMED HOSPITAL"}], "date": "2026-10-03", "date_label": "03 Oct 2026"}, {"day": 4, "weekday": "MONDAY", "holiday": false, "doctors": [{"name": "DILJIT SINGH", "hospital": "KANISHK Hospital"}, {"name": "GC BAUNTIYAL", "hospital": "BAUNTIYAL NURSING HOME"}, {"name": "GOPI BAUNTIYAL", "hospital": "BAUNTIYAL NURSING HOME"}, {"name": "MUDITA SHARMA", "hospital": "KANISHK HOSPITAL"}, {"name": "MUKESH K GUPTA", "hospital": "KANISHK HOSPITAL"}, {"name": "NEHA BAUNTIYAL", "hospital": "BAUNTIYAL NURSING HOME"}, {"name": "RAJA ALI", "hospital": "KANISHK HOSPITAL"}, {"name": "RITU GUPTA", "hospital": "KANISHK HOSPITAL"}], "date": "2026-10-05", "date_label": "05 Oct 2026"}, {"day": 5, "weekday": "TUESDAY", "holiday": false, "doctors": [{"name": "ADITI MAHESHWARI", "hospital": "Kailash hospital"}, {"name": "BRIJESH MOURYA", "hospital": "kailash hospital"}, {"name": "DIVYA GOSWAMI", "hospital": "Kailash Hospital"}, {"name": "GOPALJEE SHARMA", "hospital": "Kailash Hospital"}, {"name": "RITISHA BHATT", "hospital": "KAILASH HOSPITAL"}, {"name": "SANDHYA DEORA", "hospital": "KAILASH HOSPITAL"}, {"name": "SHALEEN BHATNAGAR", "hospital": "KAILASH HOSPITAL"}, {"name": "SHIPRA GAUR", "hospital": "Dehradun"}], "date": "2026-10-06", "date_label": "06 Oct 2026"}, {"day": 6, "weekday": "WEDNESDAY", "holiday": false, "doctors": [{"name": "ANUPAMA BAHADUR", "hospital": "Rishikesh"}, {"name": "GAURAV JAIN", "hospital": "Rishikesh"}, {"name": "LOKESH ARORA", "hospital": "Rishikesh"}, {"name": "MUKESH BAIRWA", "hospital": "Rishikesh"}, {"name": "PRASAN KUMAR PANDA", "hospital": "Rishikesh"}, {"name": "PRIYANKA GUPTA", "hospital": "Rishikesh"}, {"name": "RITU PRASHAD", "hospital": "Rishikesh"}, {"name": "UPENDRA PANDEY", "hospital": "Rishikesh"}, {"name": "UTTAM KUMAR", "hospital": "Rishikesh"}], "date": "2026-10-07", "date_label": "07 Oct 2026"}, {"day": 7, "weekday": "WEDNESDAY", "holiday": false, "doctors": [{"name": "DEEPAK SINGLA", "hospital": "Rishikesh"}, {"name": "GIRISH SINDWANI", "hospital": "Rishikesh"}, {"name": "LOKESH KUMAR SAINI", "hospital": "Rishikesh"}, {"name": "MEENAKSHI DHAR", "hospital": "Rishikesh"}, {"name": "NIDHI KAELEY", "hospital": "Rishikesh"}, {"name": "RUCHI DUA", "hospital": "Rishikesh"}, {"name": "SANKET A MANDLIK", "hospital": "Rishikesh"}, {"name": "VENKATESH S", "hospital": "Rishikesh"}], "date": "2026-10-08", "date_label": "08 Oct 2026"}, {"day": 8, "weekday": "THURSDAY", "holiday": false, "doctors": [{"name": "AMRITA GAURAV", "hospital": "Rishikesh"}, {"name": "ASHOK GOYAL", "hospital": "Rishikesh"}, {"name": "BISWAJIT HAIT", "hospital": "Rishikesh"}, {"name": "LATIKA CHAWLA", "hospital": "Rishikesh"}, {"name": "MUKESH BAIRWA", "hospital": "Rishikesh"}, {"name": "RAVIKANT GUPTA", "hospital": "Rishikesh"}, {"name": "RITU PRASHAD", "hospital": "Rishikesh"}, {"name": "SANJAY AGRAWAL", "hospital": "Rishikesh"}], "date": "2026-10-09", "date_label": "09 Oct 2026"}, {"day": 9, "weekday": "FRIDAY", "holiday": false, "doctors": [{"name": "DILJIT SINGH", "hospital": "KANISHK Hospital"}, {"name": "MUDITA SHARMA", "hospital": "KANISHK HOSPITAL"}, {"name": "MUKESH K GUPTA", "hospital": "KANISHK HOSPITAL"}, {"name": "NEHA SIROHI", "hospital": "DWARKA CLINIC"}, {"name": "PRIYANKA NAIK", "hospital": "KANISHK HOSPITAL"}, {"name": "RITU GUPTA", "hospital": "KANISHK HOSPITAL"}, {"name": "SAMARTH GUPTA", "hospital": "KANISHK HOSPITAL"}, {"name": "TARUSHREE", "hospital": "TARU SHREE IVF"}], "date": "2026-10-10", "date_label": "10 Oct 2026"}, {"day": 10, "weekday": "SATURDAY", "holiday": false, "doctors": [{"name": "ADITI MAHESHWARI", "hospital": "Kailash hospital"}, {"name": "BRIJESH MOURYA", "hospital": "kailash hospital"}, {"name": "DIVYA GOSWAMI", "hospital": "Kailash Hospital"}, {"name": "GOPALJEE SHARMA", "hospital": "Kailash Hospital"}, {"name": "RITISHA BHATT", "hospital": "KAILASH HOSPITAL"}, {"name": "SANDHYA DEORA", "hospital": "KAILASH HOSPITAL"}, {"name": "SHALEEN BHATNAGAR", "hospital": "KAILASH HOSPITAL"}, {"name": "SN UNIYAL", "hospital": "SURYA HOSPITAL"}], "date": "2026-10-12", "date_label": "12 Oct 2026"}, {"day": 11, "weekday": "MONDAY", "holiday": false, "doctors": [{"name": "AMIT RANJAN", "hospital": "Haldwani"}, {"name": "GAURAV SINGHAL", "hospital": "Haldwani"}, {"name": "GODAWARI JOSHI", "hospital": "Haldwani"}, {"name": "GURU RONAK SINGH", "hospital": "Haldwani"}, {"name": "MANOJ SAURABH MAYANK", "hospital": "Haldwani"}, {"name": "SANJAY GUPTA", "hospital": "Haldwani"}, {"name": "SANTOSH DAS", "hospital": "Haldwani"}, {"name": "VIKRAMJIT DAS", "hospital": "Haldwani"}], "date": "2026-10-13", "date_label": "13 Oct 2026"}, {"day": 12, "weekday": "TUESDAY", "holiday": false, "doctors": [{"name": "SHIPRA GAUR", "hospital": "Dehradun"}, {"name": "GEETA JAIN", "hospital": "Haldwani"}, {"name": "H S BHANDARI", "hospital": "Haldwani"}, {"name": "J S BHANDARI", "hospital": "Haldwani"}, {"name": "M C JOSHI", "hospital": "Haldwani"}, {"name": "MUKESH KUMAR", "hospital": "Haldwani"}, {"name": "ROHIT GOEL", "hospital": "Haldwani"}, {"name": "VINAY RASTOGI", "hospital": "Haldwani"}], "date": "2026-10-14", "date_label": "14 Oct 2026"}, {"day": 13, "weekday": "WEDNESDAY", "holiday": false, "doctors": [{"name": "ANKIT AGGARWAL", "hospital": "Rishikesh"}, {"name": "DEEPAK SINGLA", "hospital": "Rishikesh"}, {"name": "GIRISH SINDWANI", "hospital": "Rishikesh"}, {"name": "LOKESH KUMAR SAINI", "hospital": "Rishikesh"}, {"name": "NIDHI KAELEY", "hospital": "Rishikesh"}, {"name": "PRASAN KUMAR PANDA", "hospital": "Rishikesh"}, {"name": "PRIYANKA GOEL", "hospital": "Rishikesh"}, {"name": "SHARON KANDARI", "hospital": "Rishikesh"}, {"name": "SUNITA SUMAN", "hospital": "Rishikesh"}], "date": "2026-10-15", "date_label": "15 Oct 2026"}, {"day": 14, "weekday": "THURSDAY", "holiday": false, "doctors": [{"name": "BHARAT KUMAR", "hospital": "Rishikesh"}, {"name": "BISWAJIT HAIT", "hospital": "Rishikesh"}, {"name": "DARAB SINGH UNDERWAL", "hospital": "Rishikesh"}, {"name": "LATIKA CHAWLA", "hospital": "Rishikesh"}, {"name": "MAYANK MISHRA", "hospital": "Rishikesh"}, {"name": "MONIKA PATHANIA", "hospital": "Rishikesh"}, {"name": "UPENDRA PANDEY", "hospital": "Rishikesh"}, {"name": "UTTAM KUMAR", "hospital": "Rishikesh"}], "date": "2026-10-16", "date_label": "16 Oct 2026"}, {"day": 15, "weekday": "FRIDAY", "holiday": false, "doctors": [{"name": "MANSHI VAISH", "hospital": "VAISH NURSING HOME"}, {"name": "MEENU VAISH", "hospital": "VAISH NURSING HOME"}, {"name": "NEHA SIROHI", "hospital": "DWARKA CLINIC"}, {"name": "REEMA SIRCAR", "hospital": "INDIRA IVF"}, {"name": "SUSHMITA SAHA", "hospital": "INDIRA IVF"}, {"name": "TARUN KUMAR DAS", "hospital": "INDIRA IVF"}, {"name": "VARDHAN GARG", "hospital": "AROGYDHAM"}, {"name": "VIPUL KANDWAL", "hospital": "AROGYADHAM"}], "date": "2026-10-17", "date_label": "17 Oct 2026"}, {"day": 16, "weekday": "SATURDAY", "holiday": false, "doctors": [{"name": "GC BAUNTIYAL", "hospital": "BAUNTIYAL NURSING HOME"}, {"name": "GOPI BAUNTIYAL", "hospital": "BAUNTIYAL NURSING HOME"}, {"name": "MUDITA SHARMA", "hospital": "KANISHK HOSPITAL"}, {"name": "MUKESH K GUPTA", "hospital": "KANISHK HOSPITAL"}, {"name": "NEHA BAUNTIYAL", "hospital": "BAUNTIYAL NURSING HOME"}, {"name": "PRIYANKA NAIK", "hospital": "KANISHK HOSPITAL"}, {"name": "RAJA ALI", "hospital": "KANISHK HOSPITAL"}, {"name": "SAMARTH GUPTA", "hospital": "KANISHK HOSPITAL"}], "date": "2026-10-19", "date_label": "19 Oct 2026"}, {"day": 17, "weekday": "MONDAY", "holiday": false, "doctors": [{"name": "GODAWARI JOSHI", "hospital": "Haldwani"}, {"name": "H S BHANDARI", "hospital": "Haldwani"}, {"name": "J S BHANDARI", "hospital": "Haldwani"}, {"name": "M C JOSHI", "hospital": "Haldwani"}, {"name": "MANOJ SAURABH MAYANK", "hospital": "Haldwani"}, {"name": "ROHIT GOEL", "hospital": "Haldwani"}, {"name": "VIKRAMJIT DAS", "hospital": "Haldwani"}, {"name": "VINAY RASTOGI", "hospital": "Haldwani"}], "date": "2026-10-20", "date_label": "20 Oct 2026"}, {"day": 18, "weekday": "TUESDAY", "holiday": false, "doctors": [{"name": "SHIPRA GAUR", "hospital": "Dehradun"}, {"name": "AMIT RANJAN", "hospital": "Haldwani"}, {"name": "GAURAV SINGHAL", "hospital": "Haldwani"}, {"name": "GEETA JAIN", "hospital": "Haldwani"}, {"name": "GURU RONAK SINGH", "hospital": "Haldwani"}, {"name": "MUKESH KUMAR", "hospital": "Haldwani"}, {"name": "SANJAY GUPTA", "hospital": "Haldwani"}, {"name": "SANTOSH DAS", "hospital": "Haldwani"}], "date": "2026-10-21", "date_label": "21 Oct 2026"}, {"day": 19, "weekday": "WEDNESDAY", "holiday": false, "doctors": [{"name": "AMRITA GAURAV", "hospital": "Rishikesh"}, {"name": "ASHOK GOYAL", "hospital": "Rishikesh"}, {"name": "GAURAV JAIN", "hospital": "Rishikesh"}, {"name": "PRAKHAR SHARMA", "hospital": "Rishikesh"}, {"name": "PRIYANKA GUPTA", "hospital": "Rishikesh"}, {"name": "R SARANGA BHARTHI", "hospital": "Rishikesh"}, {"name": "RAVIKANT GUPTA", "hospital": "Rishikesh"}, {"name": "SANKET A MANDLIK", "hospital": "Rishikesh"}], "date": "2026-10-22", "date_label": "22 Oct 2026"}, {"day": 20, "weekday": "THURSDAY", "holiday": false, "doctors": [{"name": "ANKIT AGGARWAL", "hospital": "Rishikesh"}, {"name": "ANUPAMA BAHADUR", "hospital": "Rishikesh"}, {"name": "MAYANK MISHRA", "hospital": "Rishikesh"}, {"name": "MONIKA PATHANIA", "hospital": "Rishikesh"}, {"name": "PRIYANKA GOEL", "hospital": "Rishikesh"}, {"name": "RUCHI DUA", "hospital": "Rishikesh"}, {"name": "SHARON KANDARI", "hospital": "Rishikesh"}, {"name": "SUNITA SUMAN", "hospital": "Rishikesh"}], "date": "2026-10-23", "date_label": "23 Oct 2026"}, {"day": 21, "weekday": "FRIDAY", "holiday": false, "doctors": [{"name": "AARTI LUTHRA", "hospital": "LUTHRA IVF"}, {"name": "REEMA SIRCAR", "hospital": "INDIRA IVF"}, {"name": "SAVITA LUTHRA", "hospital": "LUTHRA IVF"}, {"name": "SUSHMITA SAHA", "hospital": "INDIRA IVF"}, {"name": "TARUN KUMAR DAS", "hospital": "INDIRA IVF"}, {"name": "TARUSHREE", "hospital": "TARU SHREE IVF"}, {"name": "VARDHAN GARG", "hospital": "AROGYDHAM"}, {"name": "VIPUL KANDWAL", "hospital": "AROGYADHAM"}], "date": "2026-10-24", "date_label": "24 Oct 2026"}, {"day": 22, "weekday": "SATURDAY", "holiday": false, "doctors": [{"name": "AMBRISH DIXIT", "hospital": "velmed Hospital"}, {"name": "ANKIT PANDEY", "hospital": "velmed Hospital"}, {"name": "GC BAUNTIYAL", "hospital": "BAUNTIYAL NURSING HOME"}, {"name": "GOPI BAUNTIYAL", "hospital": "BAUNTIYAL NURSING HOME"}, {"name": "MOHINI VERMA", "hospital": "VELMED HOSPITAL"}, {"name": "NEHA BAUNTIYAL", "hospital": "BAUNTIYAL NURSING HOME"}, {"name": "SHWETA JOSHI", "hospital": "VELMED HOSPITAL"}, {"name": "VANDANA BHASKAR", "hospital": "VELMED HOSPITAL"}], "date": "2026-10-26", "date_label": "26 Oct 2026"}, {"day": 23, "weekday": "THURSDAY", "holiday": false, "doctors": [{"name": "BHARAT KUMAR", "hospital": "Rishikesh"}, {"name": "DARAB SINGH UNDERWAL", "hospital": "Rishikesh"}, {"name": "LOKESH ARORA", "hospital": "Rishikesh"}, {"name": "MEENAKSHI DHAR", "hospital": "Rishikesh"}, {"name": "PRAKHAR SHARMA", "hospital": "Rishikesh"}, {"name": "R SARANGA BHARTHI", "hospital": "Rishikesh"}, {"name": "SANJAY AGRAWAL", "hospital": "Rishikesh"}, {"name": "VENKATESH S", "hospital": "Rishikesh"}], "date": "2026-10-27", "date_label": "27 Oct 2026"}, {"day": 24, "weekday": "FRIDAY", "holiday": false, "doctors": [{"name": "AARTI LUTHRA", "hospital": "LUTHRA IVF"}, {"name": "NEHA SIROHI", "hospital": "DWARKA CLINIC"}, {"name": "REEMA SIRCAR", "hospital": "INDIRA IVF"}, {"name": "SAVITA LUTHRA", "hospital": "LUTHRA IVF"}, {"name": "SUSHMITA SAHA", "hospital": "INDIRA IVF"}, {"name": "TARUN KUMAR DAS", "hospital": "INDIRA IVF"}, {"name": "VARDHAN GARG", "hospital": "AROGYDHAM"}, {"name": "VIPUL KANDWAL", "hospital": "AROGYADHAM"}], "date": "2026-10-28", "date_label": "28 Oct 2026"}, {"day": 25, "weekday": "SATURDAY", "holiday": false, "doctors": [{"name": "ANUJ BAGGA", "hospital": "velmed Hospital"}, {"name": "JUHI MEHTA BHANDARI", "hospital": "VELMED HOSPITAL"}, {"name": "MOHINI VERMA", "hospital": "VELMED HOSPITAL"}, {"name": "PURNIMA SINGH", "hospital": "VELMED HOSPITAL"}, {"name": "SHWETA JOSHI", "hospital": "VELMED HOSPITAL"}, {"name": "SN UNIYAL", "hospital": "SURYA HOSPITAL"}, {"name": "SUNIL SINGH", "hospital": "VELMED HOSPITAL"}, {"name": "VANDANA BHASKAR", "hospital": "VELMED HOSPITAL"}], "date": "2026-10-29", "date_label": "29 Oct 2026"}];
+let mode='today';
+
+function isoToday(){
+  const d=new Date();
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function key(day,name){return 'workplan:'+day+':'+name;}
+function checked(day,name){return localStorage.getItem(key(day,name))==='1';}
+function toggle(day,name,el){localStorage.setItem(key(day,name),el.checked?'1':'0'); render();}
+function currentDay(){
+  const t=isoToday();
+  return DAYS.find(x=>x.date===t) || null;
+}
+function groups(day){
+  const m={};
+  day.doctors.forEach(d=>{(m[d.hospital||'Other']??=[]).push(d);});
+  return m;
+}
+function dayCard(day,isToday=false){
+  const q=document.getElementById('search').value.trim().toLowerCase();
+  const docs=day.doctors.filter(d=>(d.name+' '+d.hospital).toLowerCase().includes(q));
+  let html=`<section class="day ${isToday?'today':''}"><div class="dayhead">
+    <div><div class="daytitle">Day ${day.day} • ${esc(day.weekday)}</div><div class="date">${esc(day.date_label)}</div></div>
+    <span class="badge ${day.holiday?'holiday':''}">${day.holiday?'HOLIDAY':day.doctors.length+' doctors'}</span>
+  </div>`;
+  if(day.holiday) return html+`<div class="empty">No visits scheduled.</div></section>`;
+  if(!docs.length) return html+`<div class="empty">No matching doctors.</div></section>`;
+  const g={};
+  docs.forEach(d=>{(g[d.hospital||'Other']??=[]).push(d);});
+  for(const [h,arr] of Object.entries(g)){
+    html+=`<div class="group"><div class="grouphead">${esc(h)} • ${arr.length}</div>`;
+    for(const d of arr){
+      const c=checked(day.day,d.name);
+      html+=`<label class="doctor"><input class="check" type="checkbox" ${c?'checked':''} onchange="toggle(${day.day},${JSON.stringify(d.name)},this)">
+      <div><div class="name">${esc(d.name)}</div><div class="hosp">${esc(d.hospital)}</div></div></label>`;
+    }
+    html+='</div>';
+  }
+  return html+'</section>';
+}
+function renderHero(){
+  const t=currentDay();
+  const el=document.getElementById('todayHero');
+  if(!t){
+    el.innerHTML='<h2>Today</h2><div class="todaydate">No day in this 25-day plan matches today.</div>';
+    return;
+  }
+  const done=t.doctors.filter(d=>checked(t.day,d.name)).length;
+  el.innerHTML=`<h2>Today: Day ${t.day} • ${esc(t.weekday)}</h2>
+    <div class="todaydate">${esc(t.date_label)}</div>
+    <div class="statrow"><span class="pill">${t.holiday?'Holiday':t.doctors.length+' doctors'}</span>
+    ${!t.holiday?`<span class="pill">${done} / ${t.doctors.length} completed</span>`:''}</div>`;
+}
+function render(){
+  renderHero();
+  const c=document.getElementById('content');
+  if(mode==='today'){
+    const t=currentDay();
+    c.innerHTML=t?dayCard(t,true):'<div class="day empty">Today is outside this 25-day plan. Open <b>All Days</b> to view the complete schedule.</div>';
+  }else{
+    c.innerHTML=DAYS.map(d=>dayCard(d,d.date===isoToday())).join('');
+  }
+}
+function showMode(m){
+  mode=m;
+  document.getElementById('todayBtn').classList.toggle('active',m==='today');
+  document.getElementById('allBtn').classList.toggle('active',m==='all');
+  document.getElementById('search').value='';
+  render();
+}
+render();
+</script>
+<script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");</script></body>
+</html>
